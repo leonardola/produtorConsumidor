@@ -18,6 +18,25 @@ public class Producer extends TimerTask {
 
     public void run() {
 
+        int number = (int) (Math.random() * 100);
+
+        try {
+
+            boolean added = false;
+            do {
+                tryToBeServer();
+                System.out.println("Enviando numero: " + number);
+                added = this.semaphore.addNumber(number);
+            } while (!added);
+
+            System.out.println("Aceito");
+
+        } catch (Exception e) {
+            System.out.println("Produtor " + this.id + " nao conseguiu adicionar um numero " + e.getMessage());
+        }
+    }
+
+    private void tryToBeServer(){
         try{
             int serverId = semaphore.getServerId();
 
@@ -34,29 +53,13 @@ public class Producer extends TimerTask {
 
                 new Server(id);
 
-                Thread.sleep(10000);
+                Thread.sleep(100);
                 semaphore.setServerIsUp();
 
                 return;
             }
         }catch (Exception e){
             System.out.println("Erro ao verificar id do servidor" + e.getMessage());
-        }
-
-        int number = (int) (Math.random() * 100);
-
-        try {
-
-            boolean added = false;
-            do {
-                System.out.println("Enviando numero: " + number);
-                added = this.semaphore.addNumber(number);
-            } while (!added);
-
-            System.out.println("Aceito");
-
-        } catch (Exception e) {
-            System.out.println("Produtor " + this.id + " nao conseguiu adicionar um numero " + e.getMessage());
         }
     }
 }
