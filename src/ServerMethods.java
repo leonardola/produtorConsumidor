@@ -2,15 +2,13 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * Created by leonardoalbuquerque on 29/03/16.
+ * Created by leonardoalbuquerque on 29/04/16.
  */
-public interface ServerMethods extends Remote {
+public interface ServerMethods extends Remote{
 
-    void say() throws RemoteException;
+    int SERVER_PORT = 4321;
 
-    int registerClient() throws RemoteException;
+    void addNumber(int number) throws RemoteException;
+    int getNumber() throws RemoteException;
 
-    int getSemaphoreId() throws RemoteException;
-
-    void turnIntoClient() throws RemoteException;
 }

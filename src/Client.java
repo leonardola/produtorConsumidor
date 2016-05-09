@@ -9,7 +9,7 @@ public class Client {
         String host = null;
         try {
             Registry registry = LocateRegistry.getRegistry(host);
-            ServerMethods server = (ServerMethods) registry.lookup("ServerMethods");
+            TemporaryServerMethods server = (TemporaryServerMethods) registry.lookup("TemporaryServerMethods");
 
             id = server.registerClient();
             server.say();
@@ -22,8 +22,9 @@ public class Client {
 
             System.out.println(serverId);
 
-            if(serverId == id){
+            if (serverId == id) {
                 server.turnIntoClient();
+                Server IamServer = new Server(id);
                 System.out.println("Eu sou o server agora");
             }
 

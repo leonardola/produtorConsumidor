@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-javac -d ../Compiled *.java
+javac -d Compiled src/*.java
