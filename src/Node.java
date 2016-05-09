@@ -1,72 +1,59 @@
-import java.rmi.AlreadyBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.rmi.RemoteException;
+import java.util.Timer;
 
-public class Node implements TemporaryServerMethods {
-
-    private static int lastClientId = 0;
-    private static int selfId;
-    private static Node obj;
-    private static Registry registry;
+public class Node {
 
     public static void main(String args[]) {
-
-        String state = tryToCreateTemporaryServer();
-
-        if (state == "client") {
-            Client client = new Client();
-        }
-    }
-
-    private static String tryToCreateTemporaryServer() {
-        String state = null;
+        int id;
 
         try {
-            obj = new Node();
-            TemporaryServerMethods stub = (TemporaryServerMethods) UnicastRemoteObject.exportObject(obj, 0);
+            Registry registry = LocateRegistry.getRegistry(SemaphoreMethods.NODES_PORT);
+            SemaphoreMethods semaphore = (SemaphoreMethods) registry.lookup("SemaphoreMethods");
 
-            registry = LocateRegistry.getRegistry();
-            registry.bind("TemporaryServerMethods", stub);
+            id = semaphore.registerClient();
+            System.out.println("Meu id eh " + id);
 
-            state = "temporaryServer";
-            selfId = lastClientId;
+            Thread.sleep(SemaphoreMethods.WAITING_TIME);
+            System.out.println("Sera que sou o server?");
 
-            lastClientId++;
+            int serverId = semaphore.getServerId();
 
-            System.out.println("Server ready");
+            System.out.println(serverId);
 
-        } catch (AlreadyBoundException e) {
-            System.out.println("Ja existe um servidor, sou apenas um cliente");
-            state = "client";
-        } catch (RemoteException e) {
-            System.out.println("Ouve um erro ao comunicar com o server " + e.getMessage());
+            if (serverId == id) {
+                System.out.println("Sou o server agora");
+                new Server(id);
+            } else if (serverId < id) {
+                System.out.println("Sou consumidor");
+                turnIntoConsumer(semaphore, id);
+            } else {
+                System.out.println("Sou produtor");
+                turnIntoProducer(semaphore, id);
+            }
+
 
         } catch (Exception e) {
-            System.out.println("Erro randomico " + e.getMessage());
+            System.err.println("Client exception: " + e.toString());
+            e.printStackTrace();
         }
-
-        if (state == null) {
-            System.exit(1);
-        }
-
-        return state;
     }
 
-    public void say() {
-        System.out.println("Hello brotha");
+    private static void turnIntoProducer(SemaphoreMethods semaphore, int id) {
+        Timer timer = new Timer();
+        Producer producer = new Producer(semaphore, id, timer);
+
+        timer.schedule(producer, 0, 1000);
     }
 
-    public int registerClient() {
-        return lastClientId++;
+    private static void turnIntoConsumer(SemaphoreMethods semaphore, int id) {
+        Consumer consumer = new Consumer(semaphore, id);
+
+        Timer timer = new Timer();
+        timer.schedule(consumer, 0, 1000);
     }
 
-    public int getSemaphoreId() throws RemoteException {
-        return lastClientId - 1;
-    }
-
-    public void turnIntoClient() throws RemoteException {
+    /*public void turnIntoClient() throws RemoteException {
         try {
             registry.unbind("TemporaryServerMethods");
             UnicastRemoteObject.unexportObject(obj, true);
@@ -75,5 +62,5 @@ public class Node implements TemporaryServerMethods {
         }
 
         Client client = new Client();
-    }
+    }*/
 }
