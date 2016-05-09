@@ -17,4 +17,4 @@ open -a Terminal.app CreateNode.sh
 
 sleep 10
 
-#open -a Terminal.app CreateNode.sh
+open -a Terminal.app CreateNode.sh
