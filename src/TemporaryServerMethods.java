@@ -6,7 +6,8 @@ import java.rmi.RemoteException;
  */
 public interface TemporaryServerMethods extends Remote {
 
-    int SERVER_PORT = 1234;
+    int PORT = 1234;
+    int WAITING_TIME = 10000;
 
     void say() throws RemoteException;
 
@@ -14,5 +15,8 @@ public interface TemporaryServerMethods extends Remote {
 
     int getSemaphoreId() throws RemoteException;
 
+    int getServerId() throws RemoteException;
+
     void turnIntoClient() throws RemoteException;
+
 }

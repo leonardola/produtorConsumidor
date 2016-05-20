@@ -9,40 +9,50 @@ public class Semaphore implements SemaphoreMethods {
 
     private static boolean freeToAdd = false;
     private static boolean freeToRead = false;
-    private static boolean addAsProducer = true;
     private static boolean serverIsDown = false;
     private static int lastAddedNodeId = 0;
-    private static int serverId = 0;
+    private static int serverId;
+    private static boolean addAsProducer = true;
+
+    private static int id;
 
     private static ServerMethods server;
     private static Registry registry;
 
-    public static void main(String args[]) {
+    public Semaphore() {
+
+    }
+
+    public Semaphore(int id) {
+
+        System.out.println("Semaphoro iniciando...");
+
+        this.id = id;
 
         startListeningNodes();
 
         try {
+            System.out.println("Esperando nos se conectarem");
             Thread.sleep(WAITING_TIME);
             addAsProducer = false;
-            System.out.println("Agora so aceito consumidores");
-            Thread.sleep(WAITING_TIME);
         } catch (Exception e) {
             System.out.println("Nao pode esperar pelos nos");
         }
 
+        System.out.println("Iniciando comunicacao com o servidor na porta "+ Server.SERVER_PORT);
         startServerComunication();
 
     }
 
     private static void startListeningNodes() {
         try {
-            LocateRegistry.createRegistry(NODES_PORT);
+            LocateRegistry.createRegistry(PORT);
 
             Semaphore obj = new Semaphore();
             SemaphoreMethods stub = (SemaphoreMethods) UnicastRemoteObject.exportObject(obj, 0);
 
             // Bind the remote object's stub in the registry
-            Registry registry = LocateRegistry.getRegistry(NODES_PORT);
+            Registry registry = LocateRegistry.getRegistry(PORT);
             registry.bind("SemaphoreMethods", stub);
 
             System.out.println("Ovindo os nos");
@@ -79,7 +89,7 @@ public class Semaphore implements SemaphoreMethods {
             setServerIsDown();
         }
 
-        System.out.println("Adicionado o numero: " + number);
+        System.out.println("Semaforo adicionou o numero: " + number);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -112,9 +122,11 @@ public class Semaphore implements SemaphoreMethods {
     @Override
     public synchronized int registerClient() {
 
-        if (addAsProducer) {
-            serverId = lastAddedNodeId;
+        if(addAsProducer){
+            serverId++;
         }
+
+        System.out.println("Cliente "+lastAddedNodeId+ " adicionado");
 
         return lastAddedNodeId++;
     }

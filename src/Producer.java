@@ -22,7 +22,7 @@ public class Producer extends TimerTask {
 
         try {
 
-            boolean added = false;
+            boolean added;
             do {
                 tryToBeServer();
                 System.out.println("Enviando numero: " + number);
@@ -36,11 +36,11 @@ public class Producer extends TimerTask {
         }
     }
 
-    private void tryToBeServer(){
-        try{
+    private void tryToBeServer() {
+        try {
             int serverId = semaphore.getServerId();
 
-            if(serverId == this.id){
+            if (serverId == this.id) {
                 System.out.println("Eu sou o novo servidor");
                 System.out.println("Eu sou o novo servidor");
                 System.out.println("Eu sou o novo servidor");
@@ -58,7 +58,7 @@ public class Producer extends TimerTask {
 
                 return;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Erro ao verificar id do servidor" + e.getMessage());
         }
     }

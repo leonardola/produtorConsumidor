@@ -17,6 +17,8 @@ public class Server implements ServerMethods {
     public Server(int id) {
         this.id = id;
 
+        System.out.println("Iniciando o servidor na porta " + ServerMethods.SERVER_PORT);
+
         try {
             LocateRegistry.createRegistry(ServerMethods.SERVER_PORT);
 
@@ -48,6 +50,5 @@ public class Server implements ServerMethods {
         numbers.remove(0);
 
         return number;
-
     }
 }
