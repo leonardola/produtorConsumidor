@@ -1,3 +1,5 @@
+import java.rmi.ConnectException;
+import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -7,10 +9,12 @@ public class Consumer extends TimerTask {
 
     SemaphoreMethods semaphore;
     int id;
+    Timer timer;
 
-    Consumer(SemaphoreMethods semaphore, int id) {
+    Consumer(SemaphoreMethods semaphore, int id, Timer timer) {
         this.semaphore = semaphore;
         this.id = id;
+        this.timer = timer;
     }
 
     public void run() {
@@ -31,9 +35,21 @@ public class Consumer extends TimerTask {
                 }
             } while (!got);
 
-        } catch (Exception e) {
+        } catch (ConnectException e){
+            restartElection();
+        }catch (Exception e) {
             System.out.println("Produtor " + this.id + " nao conseguiu adicionar um numero " + e.getMessage());
         }
     }
+
+    private void restartElection(){
+        timer.cancel();
+        timer.purge();
+
+        String[] type = {"consumidor"};
+
+        Node.main(type);
+    }
+
 
 }

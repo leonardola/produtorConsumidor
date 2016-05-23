@@ -1,3 +1,4 @@
+import java.rmi.ConnectException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,42 +25,26 @@ public class Producer extends TimerTask {
 
             boolean added;
             do {
-                tryToBeServer();
                 System.out.println("Enviando numero: " + number);
                 added = this.semaphore.addNumber(number);
             } while (!added);
 
             System.out.println("Aceito");
 
-        } catch (Exception e) {
+        }catch (ConnectException e){
+            this.timer.cancel();
+            this.timer.purge();
+
+            restartElection();
+        }
+        catch (Exception e) {
             System.out.println("Produtor " + this.id + " nao conseguiu adicionar um numero " + e.getMessage());
         }
     }
 
-    private void tryToBeServer() {
-        try {
-            int serverId = semaphore.getServerId();
+    private void restartElection(){
+        String[] type = {"produtor"};
 
-            if (serverId == this.id) {
-                System.out.println("Eu sou o novo servidor");
-                System.out.println("Eu sou o novo servidor");
-                System.out.println("Eu sou o novo servidor");
-                System.out.println("Eu sou o novo servidor");
-                System.out.println("Eu sou o novo servidor");
-                System.out.println("Eu sou o novo servidor");
-
-                timer.cancel();
-                timer.purge();
-
-                new Server(id);
-
-                Thread.sleep(100);
-                semaphore.setServerIsUp();
-
-                return;
-            }
-        } catch (Exception e) {
-            System.out.println("Erro ao verificar id do servidor" + e.getMessage());
-        }
+        Node.main(type);
     }
 }

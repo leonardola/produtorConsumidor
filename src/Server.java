@@ -9,13 +9,8 @@ import java.util.ArrayList;
 public class Server implements ServerMethods {
 
     ArrayList<Integer> numbers = new ArrayList<Integer>();
-    private int id;
 
-    public Server() {
-    }
-
-    public Server(int id) {
-        this.id = id;
+    public static void main(String args[]) {
 
         System.out.println("Iniciando o servidor na porta " + ServerMethods.SERVER_PORT);
 

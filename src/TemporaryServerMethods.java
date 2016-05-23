@@ -15,8 +15,6 @@ public interface TemporaryServerMethods extends Remote {
 
     int getSemaphoreId() throws RemoteException;
 
-    int getServerId() throws RemoteException;
-
     void turnIntoClient() throws RemoteException;
 
 }

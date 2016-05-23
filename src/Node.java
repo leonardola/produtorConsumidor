@@ -7,7 +7,6 @@ import java.util.Timer;
 
 public class Node implements TemporaryServerMethods {
 
-    private static final int TYPE_SERVER = 0;
     private static final int TYPE_SEMAPHORE = 1;
     private static final int TYPE_PRODUCER = 2;
     private static final int TYPE_CONSUMER = 3;
@@ -16,6 +15,7 @@ public class Node implements TemporaryServerMethods {
     private static int lastId = 0;
     private static int id;
     private static boolean electionTime = true;
+    private static int semaphoreId;
 
     //private static int type;
 
@@ -36,9 +36,7 @@ public class Node implements TemporaryServerMethods {
 
                 Thread.sleep(SemaphoreMethods.WAITING_TIME);
 
-                int serverId = semaphore.getServerId();
-
-                if (serverId <= id) {
+                if (args[0].equals("consumidor")) {
                     System.out.println("Sou consumidor");
                     turnIntoConsumer(semaphore, id);
                 } else {
@@ -61,7 +59,6 @@ public class Node implements TemporaryServerMethods {
             Node obj = new Node();
             TemporaryServerMethods stub = (TemporaryServerMethods) UnicastRemoteObject.exportObject(obj, 0);
 
-            //Registry registry = LocateRegistry.getRegistry(PORT);
             temporaryServerRegistry.bind("TemporaryServerMethods", stub);
 
             System.out.println("Sou o servidor temporario");
@@ -70,16 +67,30 @@ public class Node implements TemporaryServerMethods {
 
             electionTime = false;
 
-            System.out.println("O no " + lastId + " eh o servidor");
-
-            int semaphore = lastId - 1;
-            System.out.println("O no " + semaphore + " eh o semaphoro");
+            System.out.println("O no " + lastId + " eh o semaforo");
 
             //espera os nós verificarem a eleição e iniciar o semaphoro
             Thread.sleep(3000);
             UnicastRemoteObject.unexportObject(temporaryServerRegistry, true);
 
-        } catch (ExportException e) {
+            if(lastId == 0){
+
+                try{
+                    Registry registry = LocateRegistry.getRegistry(Semaphore.PORT);
+
+                    System.out.println("asdf");
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+                try{
+                    new Semaphore(lastId);
+                    return TYPE_SEMAPHORE;
+                }catch (Exception e){
+                    System.out.println("Já existe um semaforo");
+                }
+            }
+
+        }catch (ExportException e) {
             System.out.println("Já existe um servidor temporario");
             return waitElection();
         } catch (Exception e) {
@@ -101,16 +112,6 @@ public class Node implements TemporaryServerMethods {
 
             Thread.sleep(TemporaryServerMethods.WAITING_TIME);
 
-            int serverId = temporaryServer.getServerId();
-
-            System.out.println("O id do servidor eh" + serverId);
-
-            if (serverId == id) {
-                System.out.println("Sou o server agora");
-                new Server(id);
-                return TYPE_SERVER;
-            }
-
             int semaphoreId = temporaryServer.getSemaphoreId();
 
             System.out.println("O id do semaphoro eh" + semaphoreId);
@@ -121,7 +122,7 @@ public class Node implements TemporaryServerMethods {
                 return TYPE_SEMAPHORE;
             }
 
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println("Impossivel se conectar ao servidor temporario " + e.getMessage());
             System.exit(1);
         }
@@ -143,9 +144,9 @@ public class Node implements TemporaryServerMethods {
     }
 
     private static void turnIntoConsumer(SemaphoreMethods semaphore, int id) {
-        Consumer consumer = new Consumer(semaphore, id);
-
         Timer timer = new Timer();
+
+        Consumer consumer = new Consumer(semaphore, id, timer);
         timer.schedule(consumer, 0, 1000);
     }
 
@@ -156,34 +157,21 @@ public class Node implements TemporaryServerMethods {
 
     public synchronized int registerClient() throws RemoteException {
 
+        lastId++;
+
         if (electionTime) {
-            lastId++;
+            semaphoreId = lastId;
             return lastId;
-        } else {
-            return -1;
         }
 
-    }
-
-    public synchronized int getSemaphoreId() throws RemoteException {
-        return lastId - 1;
+        return lastId;
     }
 
     public synchronized void turnIntoClient() throws RemoteException {
 
     }
 
-    public synchronized int getServerId() throws RemoteException {
-        return lastId;
+    public synchronized int getSemaphoreId() throws RemoteException {
+        return semaphoreId;
     }
-
-
-    /*public void turnIntoClient() throws RemoteException {
-        try {
-            registry.unbind("TemporaryServerMethods");
-            UnicastRemoteObject.unexportObject(obj, true);
-        } catch (Exception e) {
-            System.out.println("Nao foi possivel matar o servidor " + e.getMessage());
-        }
-    }*/
 }

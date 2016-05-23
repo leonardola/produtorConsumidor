@@ -14,14 +14,8 @@ public interface SemaphoreMethods extends Remote {
 
     int registerClient() throws RemoteException;
 
-    int getServerId() throws RemoteException;
-
-    boolean amIAProducer(int id) throws RemoteException;
-
     boolean addNumber(int number) throws RemoteException;
 
     int getNumber() throws RemoteException;
-
-    void setServerIsUp() throws RemoteException;
 
 }

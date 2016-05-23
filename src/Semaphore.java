@@ -86,7 +86,6 @@ public class Semaphore implements SemaphoreMethods {
             server.addNumber(number);
         } catch (Exception e) {
             System.out.println("Servidor nao recebeu o numero " + e.getMessage());
-            setServerIsDown();
         }
 
         System.out.println("Semaforo adicionou o numero: " + number);
@@ -114,7 +113,6 @@ public class Semaphore implements SemaphoreMethods {
             return server.getNumber();
         } catch (Exception e) {
             System.out.println("Semaforo nao conseguiu receber o numero do servidor");
-            setServerIsDown();
             return SERVER_IS_DOWN;
         }
     }
@@ -129,46 +127,5 @@ public class Semaphore implements SemaphoreMethods {
         System.out.println("Cliente "+lastAddedNodeId+ " adicionado");
 
         return lastAddedNodeId++;
-    }
-
-    @Override
-    public int getServerId() {
-
-        if (serverId < 0) {
-            System.out.println("Nenhum servidor pode ser eleito");
-        }
-
-        return serverId;
-    }
-
-    @Override
-    public boolean amIAProducer(int id) {
-        if (id < serverId) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private synchronized void setServerIsDown() {
-        serverIsDown = true;
-        serverId--;
-
-        System.out.println("Servidor lockado");
-    }
-
-    public synchronized void setServerIsUp() {
-
-        try {
-            registry.unbind("SeverMethods");
-            UnicastRemoteObject.unexportObject(server, true);
-        } catch (Exception e) {
-            System.out.println("Nao foi possivel matar o servidor " + e.getMessage());
-        }
-
-        startServerComunication();
-
-        serverIsDown = false;
-        System.out.println("Servidor deslockado");
     }
 }
