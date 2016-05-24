@@ -20,6 +20,10 @@ public class Node implements TemporaryServerMethods {
     //private static int type;
 
     public static void main(String args[]) {
+        lastId = 0;
+        semaphoreId = 0;
+        electionTime = true;
+
         int id;
 
         int type = electServerAndSemaphore();
@@ -67,21 +71,13 @@ public class Node implements TemporaryServerMethods {
 
             electionTime = false;
 
-            System.out.println("O no " + lastId + " eh o semaforo");
+            System.out.println("O no " + semaphoreId + " eh o semaforo");
 
             //espera os nós verificarem a eleição e iniciar o semaphoro
             Thread.sleep(3000);
             UnicastRemoteObject.unexportObject(temporaryServerRegistry, true);
 
             if(lastId == 0){
-
-                try{
-                    Registry registry = LocateRegistry.getRegistry(Semaphore.PORT);
-
-                    System.out.println("asdf");
-                }catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
                 try{
                     new Semaphore(lastId);
                     return TYPE_SEMAPHORE;

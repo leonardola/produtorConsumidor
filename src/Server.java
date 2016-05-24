@@ -3,9 +3,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-/**
- * Created by leonardoalbuquerque on 29/03/16.
- */
+
 public class Server implements ServerMethods {
 
     ArrayList<Integer> numbers = new ArrayList<Integer>();

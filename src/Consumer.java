@@ -2,9 +2,6 @@ import java.rmi.ConnectException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-/**
- * Created by leonardoalbuquerque on 06/05/16.
- */
 public class Consumer extends TimerTask {
 
     SemaphoreMethods semaphore;

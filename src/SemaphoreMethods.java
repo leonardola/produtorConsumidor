@@ -1,9 +1,7 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-/**
- * Created by leonardoalbuquerque on 28/04/16.
- */
+
 public interface SemaphoreMethods extends Remote {
     static final int WAITING_TIME = 13000;
     static final int PORT = 4321;

@@ -2,9 +2,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-/**
- * Created by leonardoalbuquerque on 08/04/16.
- */
 public class Semaphore implements SemaphoreMethods {
 
     private static boolean freeToAdd = false;
