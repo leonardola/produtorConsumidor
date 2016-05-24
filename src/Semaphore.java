@@ -8,8 +8,6 @@ public class Semaphore implements SemaphoreMethods {
     private static boolean freeToRead = false;
     private static boolean serverIsDown = false;
     private static int lastAddedNodeId = 0;
-    private static int serverId;
-    private static boolean addAsProducer = true;
 
     private static int id;
 
@@ -31,7 +29,6 @@ public class Semaphore implements SemaphoreMethods {
         try {
             System.out.println("Esperando nos se conectarem");
             Thread.sleep(WAITING_TIME);
-            addAsProducer = false;
         } catch (Exception e) {
             System.out.println("Nao pode esperar pelos nos");
         }
@@ -116,10 +113,6 @@ public class Semaphore implements SemaphoreMethods {
 
     @Override
     public synchronized int registerClient() {
-
-        if(addAsProducer){
-            serverId++;
-        }
 
         System.out.println("Cliente "+lastAddedNodeId+ " adicionado");
 

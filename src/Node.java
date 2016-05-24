@@ -51,6 +51,7 @@ public class Node implements TemporaryServerMethods {
             } catch (Exception e) {
                 System.err.println("Client exception: " + e.toString());
                 e.printStackTrace();
+                System.exit(1);
             }
         }
 
@@ -74,19 +75,14 @@ public class Node implements TemporaryServerMethods {
             System.out.println("O no " + semaphoreId + " eh o semaforo");
 
             //espera os nós verificarem a eleição e iniciar o semaphoro
-            Thread.sleep(3000);
-            UnicastRemoteObject.unexportObject(temporaryServerRegistry, true);
+            Thread.sleep(4000);
 
-            if(lastId == 0){
-                try{
-                    new Semaphore(lastId);
-                    return TYPE_SEMAPHORE;
-                }catch (Exception e){
-                    System.out.println("Já existe um semaforo");
-                }
+            if (lastId == 0) {
+                new Semaphore(lastId);
+                return TYPE_SEMAPHORE;
             }
 
-        }catch (ExportException e) {
+        } catch (ExportException e) {
             System.out.println("Já existe um servidor temporario");
             return waitElection();
         } catch (Exception e) {
@@ -118,7 +114,7 @@ public class Node implements TemporaryServerMethods {
                 return TYPE_SEMAPHORE;
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Impossivel se conectar ao servidor temporario " + e.getMessage());
             System.exit(1);
         }
