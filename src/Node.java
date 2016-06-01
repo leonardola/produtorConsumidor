@@ -29,8 +29,8 @@ public class Node implements TemporaryServerMethods {
         int type = electServerAndSemaphore();
 
         if (type == TYPE_UNDEFINED) {
+            System.out.println("Virando um nó");
 
-            //vira um nó comum
             try {
                 Registry registry = LocateRegistry.getRegistry(SemaphoreMethods.PORT);
                 SemaphoreMethods semaphore = (SemaphoreMethods) registry.lookup("SemaphoreMethods");
@@ -49,12 +49,12 @@ public class Node implements TemporaryServerMethods {
                 }
 
             } catch (Exception e) {
+                System.out.println("Erro ao se conectar com o semaforo");
                 System.err.println("Client exception: " + e.toString());
                 e.printStackTrace();
                 System.exit(1);
             }
         }
-
     }
 
     private static int electServerAndSemaphore() {
@@ -75,7 +75,7 @@ public class Node implements TemporaryServerMethods {
             System.out.println("O no " + semaphoreId + " eh o semaforo");
 
             //espera os nós verificarem a eleição e iniciar o semaphoro
-            Thread.sleep(4000);
+            Thread.sleep(Semaphore.WAITING_TIME);
 
             if (lastId == 0) {
                 new Semaphore(lastId);
